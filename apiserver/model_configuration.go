@@ -15,8 +15,17 @@ type Configuration struct {
 	// Internal identifier for the configured API (created automatically).
 	Id *int64 `json:"id,omitempty"`
 
-	// There should be things like API address, access keys and so on.
-	ApiAccessChangeMe string `json:"apiAccessChangeMe,omitempty"`
+	// The username for API login
+	Username string `json:"username,omitempty"`
+
+	// The password for API login
+	Password string `json:"password,omitempty"`
+
+	// The key for accessing the API
+	ApiKey string `json:"apiKey,omitempty"`
+
+	// The url for the API
+	Url string `json:"url,omitempty"`
 
 	// Flag to enable or disable fetching from this API
 	Enable *bool `json:"enable,omitempty"`

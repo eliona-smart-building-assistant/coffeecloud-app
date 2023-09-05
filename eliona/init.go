@@ -16,16 +16,21 @@
 package eliona
 
 import (
+	"fmt"
+	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-utils/db"
 )
 
 // InitEliona initialize the app in aliona
 func InitEliona(connection db.Connection) error {
-
-	//
-	// Todo: do anything which is necessary to initialize the app within Eliona like creating asset types
-	//
-
+	if err := asset.InitAssetTypeFile("eliona/coffeecloud_root.json")(connection); err != nil {
+		return fmt.Errorf("init root asset type: %v", err)
+	}
+	if err := asset.InitAssetTypeFile("eliona/coffeecloud_group.json")(connection); err != nil {
+		return fmt.Errorf("init group asset type: %v", err)
+	}
+	if err := asset.InitAssetTypeFile("eliona/coffeecloud_brewer.json")(connection); err != nil {
+		return fmt.Errorf("init brewer asset type: %v", err)
+	}
 	return nil
-
 }

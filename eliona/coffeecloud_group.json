@@ -1,0 +1,10 @@
+{
+	"attributes": [],
+	"custom": true,
+	"name": "coffeecloud_group",
+	"translation": {
+		"de": "Scanomat Gruppe",
+		"en": "Scanomat group"
+	},
+	"vendor": "Scanomat"
+}

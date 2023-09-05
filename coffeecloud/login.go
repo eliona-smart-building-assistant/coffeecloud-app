@@ -13,19 +13,35 @@
 //  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package conf
+package coffeecloud
 
 import (
-	"github.com/eliona-smart-building-assistant/go-utils/db"
+	"github.com/eliona-smart-building-assistant/go-utils/http"
+	"time"
 )
 
-// InitConfiguration initialize the configuration of the app
-func InitConfiguration(connection db.Connection) error {
+type Login struct {
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	RememberMe bool   `json:"rememberMe"`
+}
 
-	//
-	// Todo: do anything which is necessary to initialize the app like creating text data to demonstrate the configuration
-	//
+type AuthToken struct {
+	IdToken string `json:"id_token"`
+}
 
-	return nil
-
+func GetAuthToken(url string, username string, password string, timeout time.Duration) (*string, error) {
+	request, err := http.NewPostRequest(url+"/rest/login", Login{
+		Username:   username,
+		Password:   password,
+		RememberMe: false,
+	})
+	if err != nil {
+		return nil, err
+	}
+	authToken, err := http.Read[AuthToken](request, timeout, true)
+	if err != nil {
+		return nil, err
+	}
+	return &authToken.IdToken, nil
 }

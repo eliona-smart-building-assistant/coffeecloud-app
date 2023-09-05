@@ -10,4 +10,4 @@ docker run --rm ^
     -o /local/apiserver ^
     --additional-properties="packageName=apiserver,sourceFolder=,outputAsLibrary=true"
 
-goimports -w ./apiserver
+goimports -w ./apiserver.   ge

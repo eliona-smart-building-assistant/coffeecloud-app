@@ -1,16 +1,16 @@
 {
-  "name": "template",
+  "name": "coffeecloud",
   "elionaMinVersion": "v10.1.0",
   "displayName": {
-    "en": "App template",
-    "de": "App Vorlage"
+    "en": "Coffee Cloud app",
+    "de": "Coffee Cloud App"
   },
   "description": {
-    "en": "This template can be used to create an app stub for an Eliona environment.",
-    "de": "Diese Vorlage kann verwendet werden um eine App für Eliona zu erstellen."
+    "en": "The Coffee Cloud app enables coffee machine management.",
+    "de": "Die Coffee Cloud App ermöglicht die Verwaltung von Kaffeemaschinen."
   },
   "dashboardTemplateNames": [
-    "Template"
+    "Coffee Cloud"
   ],
   "apiUrl": "v1",
   "apiSpecificationPath": "/version/openapi.json",

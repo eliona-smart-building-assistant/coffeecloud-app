@@ -16,7 +16,6 @@
 package main
 
 import (
-	"template/conf"
 	"template/eliona"
 	"time"
 
@@ -49,13 +48,12 @@ func main() {
 	// Init the app before the first run.
 	app.Init(db.Pool(), app.AppName(),
 		app.ExecSqlFile("conf/init.sql"),
-		conf.InitConfiguration,
 		eliona.InitEliona,
 	)
 
 	// Starting the service to collect the data for this app.
 	common.WaitForWithOs(
-		common.Loop(doAnything, time.Second),
+		common.Loop(collectData, time.Second),
 		listenApi,
 	)
 

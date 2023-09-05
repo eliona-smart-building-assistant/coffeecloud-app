@@ -13,13 +13,16 @@
 --  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 --  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-create schema if not exists template;
+create schema if not exists coffeecloud;
 
 -- Should be editable by eliona frontend.
-create table if not exists template.configuration
+create table if not exists coffeecloud.configuration
 (
 	id                   bigserial primary key,
-	api_access_change_me text not null,
+    username             text not null,
+    password             text not null,
+    api_key              text not null,
+    url                  text not null,
 	refresh_interval     integer not null default 60,
 	request_timeout      integer not null default 120,
 	asset_filter         json,
@@ -28,10 +31,10 @@ create table if not exists template.configuration
 	project_ids          text[]
 );
 
-create table if not exists template.asset
+create table if not exists coffeecloud.asset
 (
 	id               bigserial primary key,
-	configuration_id bigserial not null references template.configuration(id),
+	configuration_id bigserial not null references coffeecloud.configuration(id),
 	project_id       text      not null,
 	global_asset_id  text      not null,
 	asset_id         integer

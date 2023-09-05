@@ -80,7 +80,10 @@ func DeleteConfig(ctx context.Context, configID int64) error {
 }
 
 func dbConfigFromApiConfig(apiConfig apiserver.Configuration) (dbConfig appdb.Configuration, err error) {
-	dbConfig.APIAccessChangeMe = apiConfig.ApiAccessChangeMe
+	dbConfig.Password = apiConfig.Password
+	dbConfig.Username = apiConfig.Username
+	dbConfig.URL = apiConfig.Url
+	dbConfig.APIKey = apiConfig.ApiKey
 
 	dbConfig.ID = null.Int64FromPtr(apiConfig.Id).Int64
 	dbConfig.Enable = null.BoolFromPtr(apiConfig.Enable)
@@ -102,7 +105,10 @@ func dbConfigFromApiConfig(apiConfig apiserver.Configuration) (dbConfig appdb.Co
 }
 
 func apiConfigFromDbConfig(dbConfig *appdb.Configuration) (apiConfig apiserver.Configuration, err error) {
-	apiConfig.ApiAccessChangeMe = dbConfig.APIAccessChangeMe
+	apiConfig.Password = dbConfig.Password
+	apiConfig.Username = dbConfig.Username
+	apiConfig.Url = dbConfig.URL
+	apiConfig.ApiKey = dbConfig.APIKey
 
 	apiConfig.Id = &dbConfig.ID
 	apiConfig.Enable = dbConfig.Enable.Ptr()

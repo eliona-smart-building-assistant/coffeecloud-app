@@ -13,19 +13,87 @@
 //  DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-package broker
+package coffeecloud
 
 import (
 	"fmt"
-	"reflect"
-	"template/apiserver"
-
 	"github.com/eliona-smart-building-assistant/go-utils/common"
+	"github.com/eliona-smart-building-assistant/go-utils/http"
+	"reflect"
+	"strconv"
+	"template/apiserver"
+	"time"
 )
 
 type ExampleDevice struct {
 	ID   string `eliona:"id" subtype:"info"`
 	Name string `eliona:"name,filterable" subtype:"info"`
+}
+
+type CoffeeGroup struct {
+	ID            uint     `json:"id"`
+	Name          string   `json:"name"`
+	SerialNumbers []string `json:"serialNumbers"`
+}
+
+type CoffeeMachineMeta struct {
+	GroupID uint            `json:"groupId"`
+	Result  []CoffeeMachine `json:"result"`
+}
+
+type CoffeeMachine struct {
+	ID          string       `json:"id"`
+	MachineName string       `json:"machineName"`
+	Origin      CoffeeOrigin `json:"origin"`
+}
+
+type CoffeeOrigin struct {
+	Serial string `json:"sn"`
+}
+
+type Body struct {
+	Count    bool     `json:"count"`
+	Criteria struct{} `json:"criteria"`
+	Limit    int      `json:"limit"`
+	Offset   int      `json:"offset"`
+	Sort     struct{} `json:"sort"`
+}
+
+func GetGroups(url string, apiKey string, token string, timeout time.Duration) ([]CoffeeGroup, error) {
+	request, err := http.NewRequestWithHeaders(url+"/rest/groups", map[string]string{
+		"Authorization": "Bearer " + token,
+		"API-Key":       apiKey,
+	})
+	if err != nil {
+		return nil, err
+	}
+	groups, err := http.Read[[]CoffeeGroup](request, timeout, true)
+	if err != nil {
+		return nil, err
+	}
+	return groups, nil
+}
+
+func GetMachines(url string, apiKey string, token string, groupId uint, timeout time.Duration) ([]CoffeeMachine, error) {
+	request, err := http.NewPostRequestWithHeaders(url+"/rest/overview/data?groupid="+strconv.Itoa(int(groupId)),
+		Body{
+			Count:  false,
+			Limit:  10000,
+			Offset: 0,
+		},
+		map[string]string{
+			"Authorization": "Bearer " + token,
+			"API-Key":       apiKey,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	meta, err := http.Read[CoffeeMachineMeta](request, timeout, true)
+	if err != nil {
+		return nil, err
+	}
+	return meta.Result, nil
 }
 
 func GetTags(config apiserver.Configuration) ([]ExampleDevice, error) {

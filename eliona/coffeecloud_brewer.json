@@ -1,0 +1,82 @@
+{
+	"attributes": [
+		{
+			"enable": true,
+			"name": "hours_since_cleaned",
+			"subtype": "status",
+			"translation": {"de": "seit Reinigung", "en": "since clean"},
+			"type": "level",
+			"unit": "h",
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15","H1","DAY"
+			],
+			"viewer": true,
+			"ar": true
+		},
+		{
+			"enable": true,
+			"name": "cleaned",
+			"subtype": "status",
+			"translation": {"de": "seit Reinigung", "en": "since clean"},
+			"type": "level",
+			"unit": "h",
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15","H1","DAY"
+			],
+			"viewer": true,
+			"ar": true
+		},
+		{
+			"enable": true,
+			"name": "engine_status",
+			"subtype": "status",
+			"translation": {"de": "Maschinenzustand", "en": "engine status"},
+			"type": "operating-status",
+			"unit": "h",
+			"viewer": true,
+			"ar": true
+		},
+		{
+			"enable": true,
+			"name": "cub_count",
+			"subtype": "input",
+			"translation": {"de": "Tassen", "en": "cubs"},
+			"type": "level",
+			"unit": "h",
+			"aggregationMode": "avg",
+			"aggregationRasters": [
+				"M15","H1","DAY"
+			],
+			"viewer": true,
+			"ar": true
+		},
+		{
+			"enable": true,
+			"name": "error",
+			"subtype": "status",
+			"translation": {"de": "Fehlertext", "en": "error message"},
+			"type": "operating-status",
+			"unit": "h",
+			"viewer": true,
+			"ar": true
+		},
+		{
+			"enable": true,
+			"name": "error_description",
+			"subtype": "status",
+			"translation": {"de": "Fehlerbeschreibung", "en": "error description"},
+			"type": "operating-status",
+			"unit": "h",
+			"viewer": true,
+			"ar": true
+		}
+	],
+	"name": "coffeecloud_brewer",
+	"translation": {
+		"de": "Scanomat Kaffeemaschine",
+		"en": "Scanomat Brewer"
+	},
+	"vendor": "Scanomat"
+}

@@ -218,11 +218,22 @@ components:
           description: Internal identifier for the configured API (created automatically).
           readOnly: true
           nullable: true
-        apiAccessChangeMe:
+        username:
           type: string
           format: string
-          description: There should be things like API address, access keys and so on.
-          example: 10.10.10.101
+          description: The username for API login
+        password:
+          type: string
+          format: string
+          description: The password for API login
+        apiKey:
+          type: string
+          format: string
+          description: The key for accessing the API
+        url:
+          type: string
+          format: string
+          description: The url for the API
         enable:
           type: boolean
           description: Flag to enable or disable fetching from this API
