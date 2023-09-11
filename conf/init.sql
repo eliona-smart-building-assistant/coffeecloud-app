@@ -36,7 +36,7 @@ create table if not exists coffeecloud.asset
 	id               bigserial primary key,
 	configuration_id bigserial not null references coffeecloud.configuration(id),
 	project_id       text      not null,
-	global_asset_id  text      not null,
+	identifier       text      not null,
 	asset_id         integer
 );
 

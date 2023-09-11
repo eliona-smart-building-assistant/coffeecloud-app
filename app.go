@@ -17,11 +17,14 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
+	"strconv"
 	"template/apiserver"
 	"template/apiservices"
 	"template/coffeecloud"
 	"template/conf"
+	"template/eliona"
 	"time"
 
 	"github.com/eliona-smart-building-assistant/go-utils/common"
@@ -77,71 +80,161 @@ func collectData() {
 		common.RunOnceWithParam(func(config apiserver.Configuration) {
 			log.Info("main", "collecting %d started", *config.Id)
 
-			if err := collectDevices(config); err != nil {
-				return // Error is handled in the method itself.
-			}
+			groups, err := collectGroupedMachines(config)
+			if err != nil {
+				log.Error("coffeecloud", "error collection machines: %v", err)
+				return
+			} else {
 
-			log.Info("main", "collecting %d finished", *config.Id)
+				err = sendGroupedMachinesAndData(config, groups)
+				if err != nil {
+					log.Error("coffeecloud", "error sending assets and data: %v", err)
+					return
+				} else {
+					log.Info("main", "collecting %d successful finished", *config.Id)
+				}
+
+			}
 
 			time.Sleep(time.Second * time.Duration(config.RefreshInterval))
 		}, config, *config.Id)
 	}
 }
 
-func collectDevices(config apiserver.Configuration) error {
+func sendGroupedMachinesAndData(config apiserver.Configuration, groups []eliona.MachineGroup) error {
 
-	// todo: create root asset
-
-	token, err := coffeecloud.GetAuthToken(config.Url, config.Username, config.Password, time.Duration(*config.RequestTimeout)*time.Second)
-	if err != nil {
-		log.Error("coffeecloud", "getting access token: %v", err)
-		return err
-	}
-	if token == nil {
-		log.Error("coffeecloud", "no access token received", err)
-		return err
+	if config.ProjectIDs == nil || len(*config.ProjectIDs) == 0 {
+		log.Info("eliona", "No project id defined in configuration %d. No data is send to Eliona.")
+		return nil
 	}
 
-	groups, err := coffeecloud.GetGroups(config.Url, config.ApiKey, *token, time.Duration(*config.RequestTimeout)*time.Second)
-	if err != nil {
-		log.Error("coffeecloud", "getting groups: %v", err)
-		return err
-	}
+	for _, projectId := range *config.ProjectIDs {
 
-	for _, group := range groups {
+		rootAssetId, err := createAssetFirstTime(*config.Id, projectId, eliona.CoffeecloudRootAssetType, nil, eliona.CoffeecloudRootAssetType, "Coffeecloud Root")
+		if err != nil {
+			return fmt.Errorf("create root asset first time: %w", err)
+		}
 
-		// todo: create asset for groups
-		log.Debug("coffeecloud", "found group: %s", group.Name)
+		for _, group := range groups {
 
-		machines, err := coffeecloud.GetMachines(config.Url, config.ApiKey, *token, group.ID, time.Duration(*config.RequestTimeout)*time.Second)
-
-		for _, machine := range machines {
+			groupAssetId, err := createAssetFirstTime(*config.Id, projectId, eliona.CoffeecloudGroupAssetType+"_"+group.GroupID, &rootAssetId, eliona.CoffeecloudGroupAssetType, group.GroupName)
 			if err != nil {
-				log.Error("coffeecloud", "getting machine: %v", err)
-				return err
+				return fmt.Errorf("create group asset first time: %w", err)
 			}
 
-			// todo: create asset for machine
-			log.Debug("coffeecloud", "found machine: %s", machine.MachineName)
+			for _, machine := range group.Machines {
+
+				machineAssetId, err := createAssetFirstTime(*config.Id, projectId, eliona.CoffeecloudMachineAssetType+"_"+machine.MachineID, &groupAssetId, eliona.CoffeecloudMachineAssetType, machine.MachineName)
+				if err != nil {
+					return fmt.Errorf("create machine asset first time: %w", err)
+				}
+
+				err = eliona.UpsertData(machineAssetId, eliona.CoffeecloudMachineAssetType, machine)
+				if err != nil {
+					return fmt.Errorf("upserting machine data: %w", err)
+				}
+			}
 
 		}
 
 	}
 
-	//devices, err := kontaktio.GetDevices(config)
-	//if err != nil {
-	//	log.Error("kontakt-io", "getting devices info: %v", err)
-	//	return err
-	//}
-	//if err := eliona.CreateDeviceAssetsIfNecessary(config, devices); err != nil {
-	//	log.Error("eliona", "creating tag assets: %v", err)
-	//	return err
-	//}
-	//if err := eliona.UpsertDeviceData(config, devices); err != nil {
-	//	log.Error("eliona", "inserting location data into Eliona: %v", err)
-	//	return err
-	//}
 	return nil
+}
+
+func collectGroupedMachines(config apiserver.Configuration) ([]eliona.MachineGroup, error) {
+
+	var eliGroups []eliona.MachineGroup
+
+	ccToken, err := coffeecloud.GetAuthToken(config.Url, config.Username, config.Password, time.Duration(*config.RequestTimeout)*time.Second)
+	if err != nil {
+		return eliGroups, fmt.Errorf("getting access token: %w", err)
+	}
+	if ccToken == nil {
+		return eliGroups, fmt.Errorf("no access token received: %w", err)
+	}
+
+	ccGroups, err := coffeecloud.GetGroups(config.Url, config.ApiKey, *ccToken, time.Duration(*config.RequestTimeout)*time.Second)
+	if err != nil {
+		return eliGroups, fmt.Errorf("getting groups: %w", err)
+	}
+
+	for _, ccGroup := range ccGroups {
+
+		log.Debug("coffeecloud", "found group %s", ccGroup.Name)
+		eliGroup := eliona.MachineGroup{
+			GroupID:   strconv.Itoa(int(ccGroup.ID)),
+			GroupName: ccGroup.Name,
+		}
+
+		ccMachines, err := coffeecloud.GetMachines(config.Url, config.ApiKey, *ccToken, ccGroup.ID, time.Duration(*config.RequestTimeout)*time.Second)
+		if err != nil {
+			return eliGroups, fmt.Errorf("getting machines: %w", err)
+		}
+		ccMachineErrors, err := coffeecloud.GetMachineErrors(config.Url, config.ApiKey, *ccToken, ccGroup.ID, time.Duration(*config.RequestTimeout)*time.Second)
+		if err != nil {
+			return eliGroups, fmt.Errorf("getting machine errors: %w", err)
+		}
+		ccHealthStatuses, err := coffeecloud.GetHealthStatuses(config.Url, config.ApiKey, *ccToken, ccGroup.ID, time.Duration(*config.RequestTimeout)*time.Second)
+		if err != nil {
+			return eliGroups, fmt.Errorf("getting health statuses: %w", err)
+		}
+
+		for serialNumber, ccMachine := range ccMachines {
+			log.Debug("coffeecloud", "found machine %s", ccMachine.MachineName)
+			eliMachine := eliona.Machine{
+				MachineID:         ccMachine.ID,
+				MachineName:       ccMachine.MachineName,
+				SerialNumber:      serialNumber,
+				Firmware:          ccMachine.Origin.Firmware,
+				CubCount:          ccMachine.NumberOfCups,
+				HoursSinceCleaned: ccMachine.HoursSinceClean,
+			}
+			if ccMachineError, exists := ccMachineErrors[serialNumber]; exists {
+				eliMachine.ErrorCode = ccMachineError.ErrorCode
+				eliMachine.ErrorText = ccMachineError.Error
+				eliMachine.ErrorDescription = ccMachineError.ErrorShort
+			}
+			if ccHealthyStatus, exists := ccHealthStatuses[serialNumber]; exists {
+				eliMachine.EngineStatus = ccHealthyStatus.HealthStatus
+			}
+			eliGroup.Machines = append(eliGroup.Machines, eliMachine)
+		}
+		eliGroups = append(eliGroups, eliGroup)
+	}
+	return eliGroups, nil
+}
+
+func createAssetFirstTime(configId int64, projectId string, identifier string, parentId *int32, assetType string, name string) (int32, error) {
+	uniqueIdentifier := assetType + "_" + identifier
+	ctx := context.Background()
+
+	// check if asset already exists in app
+	assetId, err := conf.GetAssetId(ctx, configId, projectId, uniqueIdentifier)
+	if err != nil {
+		return 0, fmt.Errorf("get asset id for %s in app: %w", uniqueIdentifier, err)
+	}
+
+	// if not, create asset in Eliona also
+	if assetId == nil {
+
+		log.Debug("assets", "no asset id found for %s", uniqueIdentifier)
+		assetId, err = eliona.UpsertAsset(projectId, uniqueIdentifier, parentId, assetType, name)
+		if err != nil || assetId == nil {
+			return 0, fmt.Errorf("upserting root asset %s in Eliona: %w", uniqueIdentifier, err)
+		}
+
+		err = conf.InsertAsset(ctx, configId, *assetId, projectId, uniqueIdentifier)
+		if err != nil {
+			return 0, fmt.Errorf("insert asset %s in app: %w", uniqueIdentifier, err)
+		}
+		log.Debug("assets", "asset created for %s with id %d", uniqueIdentifier, *assetId)
+
+	} else {
+		log.Debug("assets", "asset already created for %s with id %d", uniqueIdentifier, *assetId)
+	}
+
+	return *assetId, nil
 }
 
 // listenApi starts the API server and listen for requests

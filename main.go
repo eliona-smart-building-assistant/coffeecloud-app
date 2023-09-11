@@ -48,7 +48,7 @@ func main() {
 	// Init the app before the first run.
 	app.Init(db.Pool(), app.AppName(),
 		app.ExecSqlFile("conf/init.sql"),
-		eliona.InitEliona,
+		eliona.Init,
 	)
 
 	// Starting the service to collect the data for this app.

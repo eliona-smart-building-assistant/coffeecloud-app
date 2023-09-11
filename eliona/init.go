@@ -21,16 +21,16 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/db"
 )
 
-// InitEliona initialize the app in aliona
-func InitEliona(connection db.Connection) error {
+// Init initialize the app in aliona
+func Init(connection db.Connection) error {
 	if err := asset.InitAssetTypeFile("eliona/coffeecloud_root.json")(connection); err != nil {
 		return fmt.Errorf("init root asset type: %v", err)
 	}
 	if err := asset.InitAssetTypeFile("eliona/coffeecloud_group.json")(connection); err != nil {
 		return fmt.Errorf("init group asset type: %v", err)
 	}
-	if err := asset.InitAssetTypeFile("eliona/coffeecloud_brewer.json")(connection); err != nil {
-		return fmt.Errorf("init brewer asset type: %v", err)
+	if err := asset.InitAssetTypeFile("eliona/coffeecloud_machine.json")(connection); err != nil {
+		return fmt.Errorf("init machine asset type: %v", err)
 	}
 	return nil
 }

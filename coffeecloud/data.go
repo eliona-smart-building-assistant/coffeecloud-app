@@ -36,27 +36,56 @@ type CoffeeGroup struct {
 	SerialNumbers []string `json:"serialNumbers"`
 }
 
-type CoffeeMachineMeta struct {
-	GroupID uint            `json:"groupId"`
-	Result  []CoffeeMachine `json:"result"`
+type Meta[T any] struct {
+	Count  int `json:"count"`
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
+	Result []T `json:"result"`
 }
 
 type CoffeeMachine struct {
-	ID          string       `json:"id"`
-	MachineName string       `json:"machineName"`
-	Origin      CoffeeOrigin `json:"origin"`
+	ID          string `json:"id"`
+	MachineName string `json:"machineName"`
+	Origin      struct {
+		SerialNumber string `json:"sn"`
+		Firmware     int    `json:"fw"`
+	} `json:"origin"`
+	NumberOfCups int `json:"numberOfCups"`
+	Relay        struct {
+		Location []float64 `json:"location"`
+	} `json:"relay"`
+	HoursSinceClean int `json:"hoursSinceClean"`
 }
 
-type CoffeeOrigin struct {
-	Serial string `json:"sn"`
+type MachineError struct {
+	ErrorCode  int    `json:"errorCode"`
+	Error      string `json:"error"`
+	ErrorShort string `json:"errorShort"`
+	Origin     struct {
+		SerialNumber string `json:"sn"`
+	} `json:"origin"`
+}
+
+type HealthMeta struct {
+	MachineKPIDetails []HealthStatus `json:"machineKPIDetails"`
+}
+
+type HealthStatus struct {
+	Id     string `json:"id"`
+	Origin struct {
+		SerialNumber string `json:"sn"`
+	} `json:"origin"`
+	Reason       string `json:"reason"`
+	Cause        string `json:"cause"`
+	HealthStatus string `json:"healthStatus"`
 }
 
 type Body struct {
-	Count    bool     `json:"count"`
-	Criteria struct{} `json:"criteria"`
-	Limit    int      `json:"limit"`
-	Offset   int      `json:"offset"`
-	Sort     struct{} `json:"sort"`
+	Count    bool           `json:"count"`
+	Criteria struct{}       `json:"criteria"`
+	Limit    int            `json:"limit"`
+	Offset   int            `json:"offset"`
+	Sort     map[string]any `json:"sort"`
 }
 
 func GetGroups(url string, apiKey string, token string, timeout time.Duration) ([]CoffeeGroup, error) {
@@ -74,11 +103,12 @@ func GetGroups(url string, apiKey string, token string, timeout time.Duration) (
 	return groups, nil
 }
 
-func GetMachines(url string, apiKey string, token string, groupId uint, timeout time.Duration) ([]CoffeeMachine, error) {
+// todo: implement paging (max 100 per page)
+func GetMachines(url string, apiKey string, token string, groupId uint, timeout time.Duration) (map[string]CoffeeMachine, error) {
 	request, err := http.NewPostRequestWithHeaders(url+"/rest/overview/data?groupid="+strconv.Itoa(int(groupId)),
 		Body{
 			Count:  false,
-			Limit:  10000,
+			Limit:  100,
 			Offset: 0,
 		},
 		map[string]string{
@@ -89,11 +119,80 @@ func GetMachines(url string, apiKey string, token string, groupId uint, timeout 
 	if err != nil {
 		return nil, err
 	}
-	meta, err := http.Read[CoffeeMachineMeta](request, timeout, true)
+	meta, err := http.Read[Meta[CoffeeMachine]](request, timeout, true)
 	if err != nil {
 		return nil, err
 	}
-	return meta.Result, nil
+	machines := make(map[string]CoffeeMachine)
+	for _, machine := range meta.Result {
+		serialNumber := machine.Origin.SerialNumber
+		if _, exists := machines[serialNumber]; !exists {
+			machines[serialNumber] = machine
+		}
+	}
+	return machines, nil
+}
+
+// todo: implement paging (max 100 per page)
+func GetMachineErrors(url string, apiKey string, token string, groupId uint, timeout time.Duration) (map[string]MachineError, error) {
+	request, err := http.NewPostRequestWithHeaders(url+"/rest/dashboard/error/search?groupid="+strconv.Itoa(int(groupId)),
+		Body{
+			Count:  false,
+			Limit:  100,
+			Offset: 0,
+			Sort: map[string]any{
+				"timestamp.milliseconds": "desc",
+			},
+		},
+		map[string]string{
+			"Authorization": "Bearer " + token,
+			"API-Key":       apiKey,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	meta, err := http.Read[Meta[MachineError]](request, timeout, true)
+	if err != nil {
+		return nil, err
+	}
+	machineErrors := make(map[string]MachineError)
+	for _, machineError := range meta.Result {
+		serialNumber := machineError.Origin.SerialNumber
+		if _, exists := machineErrors[serialNumber]; !exists {
+			machineErrors[serialNumber] = machineError
+		}
+	}
+	return machineErrors, nil
+}
+
+func GetHealthStatuses(url string, apiKey string, token string, groupId uint, timeout time.Duration) (map[string]HealthStatus, error) {
+	request, err := http.NewPostRequestWithHeaders(url+"/rest/dashboard/healthkpi?groupid="+strconv.Itoa(int(groupId)),
+		Body{
+			Count:  false,
+			Limit:  100,
+			Offset: 0,
+		},
+		map[string]string{
+			"Authorization": "Bearer " + token,
+			"API-Key":       apiKey,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	meta, err := http.Read[HealthMeta](request, timeout, true)
+	if err != nil {
+		return nil, err
+	}
+	healthStatuses := make(map[string]HealthStatus)
+	for _, healthStatus := range meta.MachineKPIDetails {
+		serialNumber := healthStatus.Origin.SerialNumber
+		if _, exists := healthStatuses[serialNumber]; !exists {
+			healthStatuses[serialNumber] = healthStatus
+		}
+	}
+	return healthStatuses, nil
 }
 
 func GetTags(config apiserver.Configuration) ([]ExampleDevice, error) {

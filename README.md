@@ -7,6 +7,9 @@ This template is a part of the Eliona App SDK. It can be used to create an app s
 The app needs environment variables and database tables for configuration. To edit the database tables the app provides an own API access.
 
 
+<mark>todo: limitation only first group level is used</mark>
+
+
 ### Registration in Eliona ###
 
 To start and initialize an app in an Eliona environment, the app has to be registered in Eliona. For this, entries in database tables `public.eliona_app` and `public.eliona_store` are necessary.

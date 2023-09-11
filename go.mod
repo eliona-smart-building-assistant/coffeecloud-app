@@ -4,7 +4,8 @@ go 1.20
 
 require (
 	github.com/eliona-smart-building-assistant/app-integration-tests v0.0.5
-	github.com/eliona-smart-building-assistant/go-eliona v1.9.12
+	github.com/eliona-smart-building-assistant/go-eliona v1.9.16
+	github.com/eliona-smart-building-assistant/go-eliona-api-client/v2 v2.5.3-2
 	github.com/eliona-smart-building-assistant/go-utils v1.0.37
 	github.com/friendsofgo/errors v0.9.2
 	github.com/gorilla/mux v1.8.0
@@ -20,7 +21,6 @@ replace github.com/ericlagergren/decimal => github.com/ericlagergren/decimal v0.
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/eliona-smart-building-assistant/go-eliona-api-client/v2 v2.4.20 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20190420051523-6335edbaa640 // indirect
 	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
