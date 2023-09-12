@@ -167,6 +167,14 @@ func collectGroupedMachines(config apiserver.Configuration) ([]eliona.MachineGro
 			GroupName: ccGroup.Name,
 		}
 
+		shouldUse, err := eliona.AdheresToFilter(eliGroup, config.AssetFilter)
+        if err != nil {
+            return eliGroups, fmt.Errorf("filtering group %s: %w", eliGroup.GroupName, err)
+        }
+        if !shouldUse {
+            continue
+        }
+
 		ccMachines, err := coffeecloud.GetMachines(config.Url, config.ApiKey, *ccToken, ccGroup.ID, time.Duration(*config.RequestTimeout)*time.Second)
 		if err != nil {
 			return eliGroups, fmt.Errorf("getting machines: %w", err)
@@ -198,6 +206,15 @@ func collectGroupedMachines(config apiserver.Configuration) ([]eliona.MachineGro
 			if ccHealthyStatus, exists := ccHealthStatuses[serialNumber]; exists {
 				eliMachine.EngineStatus = ccHealthyStatus.HealthStatus
 			}
+
+            shouldUse, err = eliona.AdheresToFilter(eliMachine, config.AssetFilter)
+            if err != nil {
+                return eliGroups, fmt.Errorf("filtering machine %s: %w", eliMachine.MachineName, err)
+            }
+            if !shouldUse {
+                continue
+            }
+
 			eliGroup.Machines = append(eliGroup.Machines, eliMachine)
 		}
 		eliGroups = append(eliGroups, eliGroup)

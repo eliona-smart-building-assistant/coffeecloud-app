@@ -20,6 +20,8 @@ import (
 	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 	"github.com/eliona-smart-building-assistant/go-utils/common"
+	"github.com/eliona-smart-building-assistant/go-eliona/utils"
+	"template/apiserver"
 )
 
 const CoffeecloudMachineAssetType = "coffeecloud_machine"
@@ -27,16 +29,16 @@ const CoffeecloudGroupAssetType = "coffeecloud_group"
 const CoffeecloudRootAssetType = "coffeecloud_root"
 
 type MachineGroup struct {
-	GroupID   string `json:"groupId" eliona:"filterable"`
-	GroupName string `json:"groupName" eliona:"filterable"`
+	GroupID   string `json:"groupId" eliona:"group_id,filterable"`
+	GroupName string `json:"groupName" eliona:"group_name,filterable"`
 	Machines  []Machine
 }
 
 type Machine struct {
-	MachineID    string `json:"machineId" eliona:"filterable"`
-	MachineName  string `json:"machineName" eliona:"filterable"`
-	SerialNumber string `json:"serialNumber,omitempty" eliona:"filterable"`
-	Firmware     int    `json:"firmware,omitempty" eliona:"filterable"`
+	MachineID    string `json:"machineId" eliona:"machine_id,filterable"`
+	MachineName  string `json:"machineName" eliona:"machine_name,filterable"`
+	SerialNumber string `json:"serialNumber,omitempty" eliona:"serial_number,filterable"`
+	Firmware     int    `json:"firmware,omitempty" eliona:"firmware,filterable"`
 
 	CubCount          int    `json:"cubCount,omitempty" eliona:"cub_count" subtype:"input"`
 	EngineStatus      string `json:"engineStatus,omitempty" eliona:"engine_status,filterable" subtype:"status"`
@@ -62,4 +64,31 @@ func UpsertAsset(projectId string, uniqueIdentifier string, parentId *int32, ass
 		return nil, err
 	}
 	return assetId, nil
+}
+
+func AdheresToFilter(input interface{}, filter [][]apiserver.FilterRule) (bool, error) {
+	f := apiFilterToCommonFilter(filter)
+	fp, err := utils.StructToMap(input)
+	if err != nil {
+		return false, fmt.Errorf("converting strict to map: %v", err)
+	}
+	adheres, err := common.Filter(f, fp)
+	if err != nil {
+		return false, err
+	}
+	return adheres, nil
+}
+
+func apiFilterToCommonFilter(input [][]apiserver.FilterRule) [][]common.FilterRule {
+	result := make([][]common.FilterRule, len(input))
+	for i := 0; i < len(input); i++ {
+		result[i] = make([]common.FilterRule, len(input[i]))
+		for j := 0; j < len(input[i]); j++ {
+			result[i][j] = common.FilterRule{
+				Parameter: input[i][j].Parameter,
+				Regex:     input[i][j].Regex,
+			}
+		}
+	}
+	return result
 }
