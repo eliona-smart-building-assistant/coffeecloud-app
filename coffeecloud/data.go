@@ -25,11 +25,6 @@ import (
 	"time"
 )
 
-type ExampleDevice struct {
-	ID   string `eliona:"id" subtype:"info"`
-	Name string `eliona:"name,filterable" subtype:"info"`
-}
-
 type CoffeeGroup struct {
 	ID            uint     `json:"id"`
 	Name          string   `json:"name"`
@@ -105,100 +100,109 @@ func GetGroups(url string, apiKey string, token string, timeout time.Duration) (
 
 // todo: implement paging (max 100 per page)
 func GetMachines(url string, apiKey string, token string, groupId uint, timeout time.Duration) (map[string]CoffeeMachine, error) {
-	request, err := http.NewPostRequestWithHeaders(url+"/rest/overview/data?groupid="+strconv.Itoa(int(groupId)),
-		Body{
-			Count:  false,
-			Limit:  100,
-			Offset: 0,
-		},
-		map[string]string{
-			"Authorization": "Bearer " + token,
-			"API-Key":       apiKey,
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	meta, err := http.Read[Meta[CoffeeMachine]](request, timeout, true)
-	if err != nil {
-		return nil, err
-	}
-	machines := make(map[string]CoffeeMachine)
-	for _, machine := range meta.Result {
-		serialNumber := machine.Origin.SerialNumber
-		if _, exists := machines[serialNumber]; !exists {
-			machines[serialNumber] = machine
-		}
+    machines := make(map[string]CoffeeMachine)
+    offset := 0
+    limit := 100
+    for {
+        request, err := http.NewPostRequestWithHeaders(url+"/rest/overview/data?groupid="+strconv.Itoa(int(groupId)),
+            Body{
+                Count:  true,
+                Limit:  limit,
+                Offset: offset,
+            },
+            map[string]string{
+                "Authorization": "Bearer " + token,
+                "API-Key":       apiKey,
+            },
+        )
+        if err != nil {
+            return nil, err
+        }
+        meta, err := http.Read[Meta[CoffeeMachine]](request, timeout, true)
+        if err != nil {
+            return nil, err
+        }
+        for _, machine := range meta.Result {
+            serialNumber := machine.Origin.SerialNumber
+            if _, exists := machines[serialNumber]; !exists {
+                machines[serialNumber] = machine
+            }
+        }
+        offset = offset + limit
+        if offset >= meta.Count {
+            break
+        }
 	}
 	return machines, nil
 }
 
 // todo: implement paging (max 100 per page)
 func GetMachineErrors(url string, apiKey string, token string, groupId uint, timeout time.Duration) (map[string]MachineError, error) {
-	request, err := http.NewPostRequestWithHeaders(url+"/rest/dashboard/error/search?groupid="+strconv.Itoa(int(groupId)),
-		Body{
-			Count:  false,
-			Limit:  100,
-			Offset: 0,
-			Sort: map[string]any{
-				"timestamp.milliseconds": "desc",
-			},
-		},
-		map[string]string{
-			"Authorization": "Bearer " + token,
-			"API-Key":       apiKey,
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	meta, err := http.Read[Meta[MachineError]](request, timeout, true)
-	if err != nil {
-		return nil, err
-	}
 	machineErrors := make(map[string]MachineError)
-	for _, machineError := range meta.Result {
-		serialNumber := machineError.Origin.SerialNumber
-		if _, exists := machineErrors[serialNumber]; !exists {
-			machineErrors[serialNumber] = machineError
-		}
+    offset := 0
+    limit := 100
+    for {
+        request, err := http.NewPostRequestWithHeaders(url+"/rest/dashboard/error/search?groupid="+strconv.Itoa(int(groupId)),
+            Body{
+                Count:  true,
+                Limit:  limit,
+                Offset: offset,
+                Sort: map[string]any{
+                    "timestamp.milliseconds": "desc",
+                },
+            },
+            map[string]string{
+                "Authorization": "Bearer " + token,
+                "API-Key":       apiKey,
+            },
+        )
+        if err != nil {
+            return nil, err
+        }
+        meta, err := http.Read[Meta[MachineError]](request, timeout, true)
+        if err != nil {
+            return nil, err
+        }
+        for _, machineError := range meta.Result {
+            serialNumber := machineError.Origin.SerialNumber
+            if _, exists := machineErrors[serialNumber]; !exists {
+                machineErrors[serialNumber] = machineError
+            }
+        }
+        offset = offset + limit
+        if offset >= meta.Count {
+            break
+        }
 	}
 	return machineErrors, nil
 }
 
 func GetHealthStatuses(url string, apiKey string, token string, groupId uint, timeout time.Duration) (map[string]HealthStatus, error) {
-	request, err := http.NewPostRequestWithHeaders(url+"/rest/dashboard/healthkpi?groupid="+strconv.Itoa(int(groupId)),
-		Body{
-			Count:  false,
-			Limit:  100,
-			Offset: 0,
-		},
-		map[string]string{
-			"Authorization": "Bearer " + token,
-			"API-Key":       apiKey,
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-	meta, err := http.Read[HealthMeta](request, timeout, true)
-	if err != nil {
-		return nil, err
-	}
 	healthStatuses := make(map[string]HealthStatus)
-	for _, healthStatus := range meta.MachineKPIDetails {
-		serialNumber := healthStatus.Origin.SerialNumber
-		if _, exists := healthStatuses[serialNumber]; !exists {
-			healthStatuses[serialNumber] = healthStatus
-		}
-	}
+    request, err := http.NewPostRequestWithHeaders(url+"/rest/dashboard/healthkpi?groupid="+strconv.Itoa(int(groupId)),
+        nil,
+        map[string]string{
+            "Authorization": "Bearer " + token,
+            "API-Key":       apiKey,
+        },
+    )
+    if err != nil {
+        return nil, err
+    }
+    meta, err := http.Read[HealthMeta](request, timeout, true)
+    if err != nil {
+        return nil, err
+    }
+    for _, healthStatus := range meta.MachineKPIDetails {
+        serialNumber := healthStatus.Origin.SerialNumber
+        if _, exists := healthStatuses[serialNumber]; !exists {
+            healthStatuses[serialNumber] = healthStatus
+        }
+    }
 	return healthStatuses, nil
 }
 
-func GetTags(config apiserver.Configuration) ([]ExampleDevice, error) {
-	return nil, nil
-}
-
+/*
 func (tag *ExampleDevice) AdheresToFilter(filter [][]apiserver.FilterRule) (bool, error) {
 	f := apiFilterToCommonFilter(filter)
 	fp, err := structToMap(tag)
@@ -211,6 +215,7 @@ func (tag *ExampleDevice) AdheresToFilter(filter [][]apiserver.FilterRule) (bool
 	}
 	return adheres, nil
 }
+*/
 
 func structToMap(input interface{}) (map[string]string, error) {
 	if input == nil {
