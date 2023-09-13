@@ -1,0 +1,21 @@
+{
+	"name": "coffecloud",
+	"custom": true,
+	"translation": {
+		"de": "Coffecloud",
+		"en": "Coffecloud"
+	},
+	"icon": "level",
+	"withAlarm": true,
+	"withTimespan": true,
+	"elements": [
+		{
+			"category": "value",
+			"sequence": 1,
+			"config": {
+				"description": "",
+				"variant": "tiles"
+			}
+		}
+	]
+}

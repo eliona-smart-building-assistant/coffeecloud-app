@@ -18,18 +18,22 @@ package eliona
 import (
 	"fmt"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
+	"github.com/eliona-smart-building-assistant/go-eliona/dashboard"
 	"github.com/eliona-smart-building-assistant/go-utils/db"
 )
 
 // Init initialize the app in aliona
 func Init(connection db.Connection) error {
-	if err := asset.InitAssetTypeFile("eliona/coffeecloud_root.json")(connection); err != nil {
+	if err := asset.InitAssetTypeFile("eliona/coffeecloud_root_asset_type.json")(connection); err != nil {
 		return fmt.Errorf("init root asset type: %v", err)
 	}
-	if err := asset.InitAssetTypeFile("eliona/coffeecloud_group.json")(connection); err != nil {
+	if err := asset.InitAssetTypeFile("eliona/coffeecloud_group_asset_type.json")(connection); err != nil {
 		return fmt.Errorf("init group asset type: %v", err)
 	}
-	if err := asset.InitAssetTypeFile("eliona/coffeecloud_machine.json")(connection); err != nil {
+	if err := asset.InitAssetTypeFile("eliona/coffeecloud_machine_asset_type.json")(connection); err != nil {
+		return fmt.Errorf("init machine asset type: %v", err)
+	}
+	if err := dashboard.InitWidgetTypeFile("eliona/coffeecloud_widget_type.json")(connection); err != nil {
 		return fmt.Errorf("init machine asset type: %v", err)
 	}
 	return nil

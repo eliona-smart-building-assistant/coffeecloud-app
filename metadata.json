@@ -10,7 +10,7 @@
     "de": "Die Coffee Cloud App ermöglicht die Verwaltung von Kaffeemaschinen."
   },
   "dashboardTemplateNames": [
-    "Coffee Cloud"
+    "Coffeecloud"
   ],
   "apiUrl": "v1",
   "apiSpecificationPath": "/version/openapi.json",
