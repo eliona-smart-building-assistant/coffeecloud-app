@@ -16,12 +16,12 @@
 package conf
 
 import (
+	"coffeecloud/apiserver"
+	"coffeecloud/appdb"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"template/apiserver"
-	"template/appdb"
 
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/volatiletech/null/v8"

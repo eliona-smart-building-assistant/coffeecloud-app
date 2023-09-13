@@ -16,11 +16,11 @@
 package apiservices
 
 import (
+	"coffeecloud/apiserver"
+	"coffeecloud/conf"
 	"context"
 	"errors"
 	"net/http"
-	"template/apiserver"
-	"template/conf"
 )
 
 // ConfigurationApiService is a service that implements the logic for the ConfigurationApiServicer

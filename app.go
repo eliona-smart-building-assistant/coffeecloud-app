@@ -16,15 +16,15 @@
 package main
 
 import (
+	"coffeecloud/apiserver"
+	"coffeecloud/apiservices"
+	"coffeecloud/coffeecloud"
+	"coffeecloud/conf"
+	"coffeecloud/eliona"
 	"context"
 	"fmt"
 	"net/http"
 	"strconv"
-	"template/apiserver"
-	"template/apiservices"
-	"template/coffeecloud"
-	"template/conf"
-	"template/eliona"
 	"time"
 
 	"github.com/eliona-smart-building-assistant/go-utils/common"
@@ -168,12 +168,12 @@ func collectGroupedMachines(config apiserver.Configuration) ([]eliona.MachineGro
 		}
 
 		shouldUse, err := eliona.AdheresToFilter(eliGroup, config.AssetFilter)
-        if err != nil {
-            return eliGroups, fmt.Errorf("filtering group %s: %w", eliGroup.GroupName, err)
-        }
-        if !shouldUse {
-            continue
-        }
+		if err != nil {
+			return eliGroups, fmt.Errorf("filtering group %s: %w", eliGroup.GroupName, err)
+		}
+		if !shouldUse {
+			continue
+		}
 
 		ccMachines, err := coffeecloud.GetMachines(config.Url, config.ApiKey, *ccToken, ccGroup.ID, time.Duration(*config.RequestTimeout)*time.Second)
 		if err != nil {
@@ -207,13 +207,13 @@ func collectGroupedMachines(config apiserver.Configuration) ([]eliona.MachineGro
 				eliMachine.EngineStatus = ccHealthyStatus.HealthStatus
 			}
 
-            shouldUse, err = eliona.AdheresToFilter(eliMachine, config.AssetFilter)
-            if err != nil {
-                return eliGroups, fmt.Errorf("filtering machine %s: %w", eliMachine.MachineName, err)
-            }
-            if !shouldUse {
-                continue
-            }
+			shouldUse, err = eliona.AdheresToFilter(eliMachine, config.AssetFilter)
+			if err != nil {
+				return eliGroups, fmt.Errorf("filtering machine %s: %w", eliMachine.MachineName, err)
+			}
+			if !shouldUse {
+				continue
+			}
 
 			eliGroup.Machines = append(eliGroup.Machines, eliMachine)
 		}

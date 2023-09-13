@@ -64,5 +64,5 @@ WHERE dashboard_id IN (
 DELETE FROM public.dashboard
 WHERE name LIKE 'Coffee Cloud%';
 
--- DELETE FROM eliona_app WHERE app_name = 'template';
--- DELETE FROM eliona_store WHERE app_name = 'template';
+-- DELETE FROM eliona_app WHERE app_name = 'coffeecloud';
+-- DELETE FROM eliona_store WHERE app_name = 'coffeecloud';

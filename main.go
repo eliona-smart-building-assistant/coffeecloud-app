@@ -16,7 +16,7 @@
 package main
 
 import (
-	"template/eliona"
+	"coffeecloud/eliona"
 	"time"
 
 	"github.com/eliona-smart-building-assistant/go-eliona/app"

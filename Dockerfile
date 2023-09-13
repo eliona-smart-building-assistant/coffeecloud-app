@@ -25,16 +25,15 @@ RUN go build -o ../app
 
 RUN DATE=$(date) && \
     GIT_COMMIT=$(git rev-list -1 HEAD) && \
-    go build -ldflags "-X 'template/apiservices.BuildTimestamp=$DATE' -X 'template/apiservices.GitCommit=$GIT_COMMIT'" -o ../app
+    go build -ldflags "-X 'coffeecloud/apiservices.BuildTimestamp=$DATE' -X 'coffeecloud/apiservices.GitCommit=$GIT_COMMIT'" -o ../app
 
 FROM eliona/base-alpine:latest-3.17 AS target
 
 COPY --from=build /app ./
 COPY conf/*.sql ./conf/
-#COPY eliona/*.json ./eliona/
+COPY metadata.json ./
+COPY eliona/*.json ./eliona/
 COPY openapi.yaml ./
-
-ENV APPNAME=template
 
 ENV TZ=Europe/Zurich
 CMD [ "/app" ]

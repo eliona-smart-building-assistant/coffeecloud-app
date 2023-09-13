@@ -16,12 +16,12 @@
 package eliona
 
 import (
+	"coffeecloud/apiserver"
 	"fmt"
 	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
-	"github.com/eliona-smart-building-assistant/go-utils/common"
 	"github.com/eliona-smart-building-assistant/go-eliona/utils"
-	"template/apiserver"
+	"github.com/eliona-smart-building-assistant/go-utils/common"
 )
 
 const CoffeecloudMachineAssetType = "coffeecloud_machine"
