@@ -104,7 +104,7 @@ func collectData() {
 func sendGroupedMachinesAndData(config apiserver.Configuration, groups []eliona.MachineGroup) error {
 
 	if config.ProjectIDs == nil || len(*config.ProjectIDs) == 0 {
-		log.Info("eliona", "No project id defined in configuration %d. No data is send to Eliona.")
+		log.Info("eliona", "No project id defined in configuration %d. No data is send to Eliona.", config.Id)
 		return nil
 	}
 
