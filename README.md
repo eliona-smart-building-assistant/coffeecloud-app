@@ -1,108 +1,70 @@
-# App Template
+# Eliona app to access CoffeeCloud machines
 
-This template is a part of the Eliona App SDK. It can be used to create an app stub for an Eliona environment.
+This app collects coffee machines available in the [CoffeeCloud](https://www.scanomat.com/coffeecloud/).
 
 ## Configuration
 
-The app needs environment variables and database tables for configuration. To edit the database tables the app provides an own API access.
+The app needs environment variables and database tables for configuration. To edit the database tables, the app provides an own API access.
 
-
-<mark>todo: limitation only first group level is used</mark>
-
-
-### Registration in Eliona ###
+### Registration in Eliona
 
 To start and initialize an app in an Eliona environment, the app has to be registered in Eliona. For this, entries in database tables `public.eliona_app` and `public.eliona_store` are necessary.
 
-This initialization can be handled by the `reset.sql` script.
-
+This initialization can also be handled by the `reset.sql` script.
 
 ### Environment variables
 
-<mark>Todo: Describe further environment variables tables the app needs for configuration</mark>
+The following environment variables are required:
 
+* `CONNECTION_STRING`: The connection string to the Eliona database.
+* `API_ENDPOINT`: The endpoint of the Eliona API v2.
+* `API_TOKEN`: The secret token to authenticate the app with the Eliona API.
+* `API_SERVER_PORT`: (optional) The port of the API server. Defaults to 3000.
+* `LOG_LEVEL`: (optional) The minimum log level. Defaults to `info`.
 
-- `APPNAME`: must be set to `template`. Some resources use this name to identify the app inside an Eliona environment.
+### Database tables
 
-- `CONNECTION_STRING`: configures the [Eliona database](https://github.com/eliona-smart-building-assistant/go-eliona/tree/main/db). Otherwise, the app can't be initialized and started. (e.g. `postgres://user:pass@localhost:5432/iot`)
+The app creates the following database tables during initialization:
 
-- `API_ENDPOINT`:  configures the endpoint to access the [Eliona API v2](https://github.com/eliona-smart-building-assistant/eliona-api). Otherwise, the app can't be initialized and started. (e.g. `http://api-v2:3000/v2`)
+* `coffecloud.configuration`: Contains the configuration of the app.
+* `coffecloud.asset`: Maps machines and groups to Eliona asset IDs.
 
-- `API_TOKEN`: defines the secret to authenticate the app and access the Eliona API.
+## Limitations
 
-- `API_SERVER_PORT`(optional): define the port the API server listens. The default value is Port `3000`. <mark>Todo: Decide if the app needs its own API. If so, an API server have to implemented and the port have to be configurable.</mark>
+The app only provides the coffee machines as grouped in the CoffeeCloud environment. The deeper hierarchy of groups is not synchronized to Eliona. Machines of deeper groups are grouped under their root group.
 
-- `LOG_LEVEL`(optional): defines the minimum level that should be [logged](https://github.com/eliona-smart-building-assistant/go-utils/blob/main/log/README.md). The default level is `info`.
-
-### Database tables ###
-
-<mark>Todo: Describe other tables if the app needs them.</mark>
-
-The app requires configuration data that remains in the database. To do this, the app creates its own database schema `template` during initialization. To modify and handle the configuration data the app provides an API access. Have a look at the [API specification](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/app-template/develop/openapi.yaml) how the configuration tables should be used.
-
-- `template.configuration`: Contains configuration of the app. Editable through the API.
-
-- `template.asset`: Provides asset mapping. Maps broker's asset IDs to Eliona asset IDs.
-
-**Generation**: to generate access method to database see Generation section below.
-
+The CoffeeCloud API limits the number of requests that can be made per unit of time. Therefore, it is important to collect data with a time interval that is long enough to avoid being banned from the API.
 
 ## References
 
-### App API ###
+### App API
 
-The app provides its own API to access configuration data and other functions. The full description of the API is defined in the `openapi.yaml` OpenAPI definition file.
+The app provides its own API to access configuration data and other functions. The API definition is in the `openapi.yaml` file.
 
-- [API Reference](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/app-template/develop/openapi.yaml) shows details of the API
+* [API Reference](https://eliona-smart-building-assistant.github.io/open-api-docs/?https://raw.githubusercontent.com/eliona-smart-building-assistant/coffeecloud-app/develop/openapi.yaml)
 
-**Generation**: to generate api server stub see Generation section below.
+### Eliona assets
 
+The app creates Eliona asset types and attribute sets during initialization.
 
-### Eliona assets ###
+### Continuous asset creation
 
-This app creates Eliona asset types and attribute sets during initialization.
+Assets for all machines in the CoffeeCloud are created automatically when the configuration is added.
 
-The data is written for each device, structured into different subtypes of Elinoa assets. The following subtypes are defined:
-
-- `Info`: Static data which provides information about a device like address and firmware info.
-- `Status`: Device status information, like battery level.
-- `Input`: Current values reported by sensors.
-- `Output`: Values that are to be passed back to the provider.
-
-### Continuous asset creation ###
-
-Assets for all devices connected to the Template account are created automatically when the configuration is added.
-
-To select which assets to create, a filter could be specified in config. The schema of the filter is defined in the `openapi.yaml` file.
-
-Possible filter parameters are defined in the structs in `broker.go` and marked with `eliona:"attribute_name,filterable"` field tag.
+To select which assets to create, a filter can be specified in the configuration. The schema of the filter is defined in the `openapi.yaml` file. Possible filter parameters are defined in the structs marked with the `eliona:"attribute_name,filterable"` field tag.
 
 To avoid conflicts, the Global Asset Identifier is a manufacturer's ID prefixed with asset type name as a namespace.
 
-### Dashboard ###
+### Dashboard
 
-An example dashboard meant for a quick start or showcasing the apps abilities can be obtained by accessing the dashboard endpoint defined in the `openapi.yaml` file.
+An example dashboard is available by accessing the `/dashboard-templates` endpoint.
 
 ## Tools
 
-### Generate API server stub ###
+### Generate API server stub
 
-For the API server the [OpenAPI Generator](https://openapi-generator.tech/docs/generators/openapi-yaml) for go-server is used to generate a server stub. The easiest way to generate the server files is to use one of the predefined generation script which use the OpenAPI Generator Docker image.
+The [OpenAPI Generator](https://openapi-generator.tech/docs/generators/openapi-yaml) can be used to generate a server stub for the app. The easiest way to do this is to use the `generate-api-server.cmd` or `generate-api-server.sh` script.
 
-```
-.\generate-api-server.cmd # Windows
-./generate-api-server.sh # Linux
-```
+### Generate database access
 
-### Generate Database access ###
-
-For the database access [SQLBoiler](https://github.com/volatiletech/sqlboiler) is used. The easiest way to generate the database files is to use one of the predefined generation script which use the SQLBoiler implementation. Please note that the database connection in the `sqlboiler.toml` file have to be configured.
-
-```
-.\generate-db.cmd # Windows
-./generate-db.sh # Linux
-```
-
-### Generate asset type descriptions ###
-
-For generating asset type descriptions from field-tag-annotated structs, [asse-from-struct tool](https://github.com/eliona-smart-building-assistant/dev-utilities) can be used.
+The [SQLBoiler](https://github.com/volatiletech/sqlboiler) tool can be used to generate database access code for the app. The easiest way to do this is to use the `generate-db.cmd` or `generate-db.sh` script.

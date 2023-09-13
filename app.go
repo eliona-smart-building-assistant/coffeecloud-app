@@ -110,26 +110,26 @@ func sendGroupedMachinesAndData(config apiserver.Configuration, groups []eliona.
 
 	for _, projectId := range *config.ProjectIDs {
 
-		rootAssetId, err := createAssetFirstTime(*config.Id, projectId, eliona.CoffeecloudRootAssetType, nil, eliona.CoffeecloudRootAssetType, "Coffeecloud Root")
+		rootAssetId, err := createAssetFirstTime(*config.Id, projectId, eliona.CoffeeCloudRootAssetType, nil, eliona.CoffeeCloudRootAssetType, "CoffeeCloud")
 		if err != nil {
 			return fmt.Errorf("create root asset first time: %w", err)
 		}
 
 		for _, group := range groups {
 
-			groupAssetId, err := createAssetFirstTime(*config.Id, projectId, eliona.CoffeecloudGroupAssetType+"_"+group.GroupID, &rootAssetId, eliona.CoffeecloudGroupAssetType, group.GroupName)
+			groupAssetId, err := createAssetFirstTime(*config.Id, projectId, eliona.CoffeeCloudGroupAssetType+"_"+group.GroupID, &rootAssetId, eliona.CoffeeCloudGroupAssetType, group.GroupName)
 			if err != nil {
 				return fmt.Errorf("create group asset first time: %w", err)
 			}
 
 			for _, machine := range group.Machines {
 
-				machineAssetId, err := createAssetFirstTime(*config.Id, projectId, eliona.CoffeecloudMachineAssetType+"_"+machine.MachineID, &groupAssetId, eliona.CoffeecloudMachineAssetType, machine.MachineName)
+				machineAssetId, err := createAssetFirstTime(*config.Id, projectId, eliona.CoffeeCloudMachineAssetType+"_"+machine.MachineID, &groupAssetId, eliona.CoffeeCloudMachineAssetType, machine.MachineName)
 				if err != nil {
 					return fmt.Errorf("create machine asset first time: %w", err)
 				}
 
-				err = eliona.UpsertData(machineAssetId, eliona.CoffeecloudMachineAssetType, machine)
+				err = eliona.UpsertData(machineAssetId, eliona.CoffeeCloudMachineAssetType, machine)
 				if err != nil {
 					return fmt.Errorf("upserting machine data: %w", err)
 				}

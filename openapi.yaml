@@ -17,10 +17,10 @@ openapi: 3.0.3
 
 info:
   version: 1.0.0
-  title: App Coffeecloud API
-  description: API to access and configure the app Coffeecloud
+  title: App CoffeeCloud API
+  description: API to access and configure the app CoffeeCloud
 externalDocs:
-  description: Find out more about the app Coffeecloud
+  description: Find out more about the app CoffeeCloud
   url: https://github.com/eliona-smart-building-assistant/coffeecloud-app
 servers:
   - url: http://coffeecloud/v1

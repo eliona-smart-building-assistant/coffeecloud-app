@@ -35,8 +35,8 @@ func NewCustomizationApiService() apiserver.CustomizationAPIServicer {
 
 // GetDashboardTemplateByName - Get a full dashboard template
 func (s *CustomizationApiService) GetDashboardTemplateByName(ctx context.Context, dashboardTemplateName string, projectId string) (apiserver.ImplResponse, error) {
-	if dashboardTemplateName == "Coffeecloud" {
-		dashboard, err := eliona.CoffeecloudDashboard(projectId)
+	if dashboardTemplateName == "CoffeeCloud" {
+		dashboard, err := eliona.CoffeeCloudDashboard(projectId)
 		if err != nil {
 			return apiserver.ImplResponse{Code: http.StatusInternalServerError}, err
 		}

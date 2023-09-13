@@ -3,8 +3,8 @@
 	"custom": true,
 	"name": "coffeecloud_root",
 	"translation": {
-		"de": "Coffeecloud",
-		"en": "Coffeecloud"
+		"de": "CoffeeCloud",
+		"en": "CoffeeCloud"
 	},
 	"vendor": "Scanomat"
 }

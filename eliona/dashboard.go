@@ -21,15 +21,15 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 )
 
-func CoffeecloudDashboard(projectId string) (api.Dashboard, error) {
+func CoffeeCloudDashboard(projectId string) (api.Dashboard, error) {
 	dashboard := api.Dashboard{}
-	dashboard.Name = "Coffeecloud"
+	dashboard.Name = "CoffeeCloud"
 	dashboard.ProjectId = projectId
 	dashboard.Widgets = []api.Widget{}
 
 	machines, _, err := client.NewClient().AssetsAPI.
 		GetAssets(client.AuthenticationContext()).
-		AssetTypeName(CoffeecloudMachineAssetType).
+		AssetTypeName(CoffeeCloudMachineAssetType).
 		ProjectId(projectId).
 		Execute()
 	if err != nil {

@@ -24,9 +24,9 @@ import (
 	"github.com/eliona-smart-building-assistant/go-utils/common"
 )
 
-const CoffeecloudMachineAssetType = "coffeecloud_machine"
-const CoffeecloudGroupAssetType = "coffeecloud_group"
-const CoffeecloudRootAssetType = "coffeecloud_root"
+const CoffeeCloudMachineAssetType = "coffeecloud_machine"
+const CoffeeCloudGroupAssetType = "coffeecloud_group"
+const CoffeeCloudRootAssetType = "coffeecloud_root"
 
 type MachineGroup struct {
 	GroupID   string `json:"groupId" eliona:"group_id,filterable"`
