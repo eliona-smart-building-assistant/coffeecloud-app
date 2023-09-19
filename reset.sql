@@ -22,20 +22,20 @@ WHERE app_name = 'coffeecloud';
 
 INSERT INTO public.eliona_store (app_name, category, version)
 VALUES ('coffeecloud', 'app', '1.0.0')
-	ON CONFLICT (app_name) DO UPDATE SET version = '1.0.0';
+    ON CONFLICT (app_name) DO UPDATE SET version = '1.0.0';
 
 INSERT INTO public.eliona_app (app_name, enable)
 VALUES ('coffeecloud', 't')
-	ON CONFLICT (app_name) DO UPDATE SET initialized_at = null;
+    ON CONFLICT (app_name) DO UPDATE SET initialized_at = null;
 
 DROP SCHEMA IF EXISTS coffeecloud CASCADE;
 
 DELETE FROM heap
 WHERE asset_id IN (
-	SELECT asset_id
-	FROM asset
-	WHERE asset_type LIKE E'coffeecloud\\_%'
-);
+    SELECT asset_id
+    FROM asset
+    WHERE asset_type LIKE E'coffeecloud\\_%'
+    );
 
 DELETE FROM attribute_schema
 WHERE asset_type LIKE E'coffeecloud\\_%';
@@ -48,17 +48,17 @@ WHERE asset_type LIKE E'coffeecloud\\_%';
 
 DELETE FROM public.widget_data
 WHERE widget_id IN (
-	SELECT public.widget.id
-	FROM public.widget
-	JOIN public.dashboard USING (dashboard_id)
-	WHERE public.dashboard.name LIKE 'Coffee Cloud%'
+    SELECT public.widget.id
+    FROM public.widget
+             JOIN public.dashboard USING (dashboard_id)
+    WHERE public.dashboard.name LIKE 'Coffee Cloud%'
 );
 
 DELETE FROM public.widget
 WHERE dashboard_id IN (
-	SELECT dashboard_id
-	FROM public.dashboard
-	WHERE name LIKE 'Coffee Cloud%'
+    SELECT dashboard_id
+    FROM public.dashboard
+    WHERE name LIKE 'Coffee Cloud%'
 );
 
 DELETE FROM public.dashboard

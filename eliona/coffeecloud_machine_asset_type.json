@@ -66,8 +66,8 @@
 	],
 	"name": "coffeecloud_machine",
 	"translation": {
-		"de": "Scanomat Kaffeemaschine",
-		"en": "Scanomat coffee machine"
+		"de": "CoffeeCloud Kaffeemaschine",
+		"en": "CoffeeCloud coffee machine"
 	},
 	"vendor": "Scanomat"
 }

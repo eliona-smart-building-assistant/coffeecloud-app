@@ -52,27 +52,27 @@ func (c *ConfigurationAPIController) Routes() Routes {
 	return Routes{
 		"DeleteConfigurationById": Route{
 			strings.ToUpper("Delete"),
-			"/v1/config/{config-id}",
+			"/v1/configs/{config-id}",
 			c.DeleteConfigurationById,
 		},
 		"GetConfigurationById": Route{
 			strings.ToUpper("Get"),
-			"/v1/config/{config-id}",
+			"/v1/configs/{config-id}",
 			c.GetConfigurationById,
 		},
 		"GetConfigurations": Route{
 			strings.ToUpper("Get"),
-			"/v1/config",
+			"/v1/configs",
 			c.GetConfigurations,
 		},
 		"PostConfiguration": Route{
 			strings.ToUpper("Post"),
-			"/v1/config",
+			"/v1/configs",
 			c.PostConfiguration,
 		},
 		"PutConfigurationById": Route{
 			strings.ToUpper("Put"),
-			"/v1/config/{config-id}",
+			"/v1/configs/{config-id}",
 			c.PutConfigurationById,
 		},
 	}

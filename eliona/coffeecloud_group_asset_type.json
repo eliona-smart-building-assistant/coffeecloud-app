@@ -3,8 +3,8 @@
 	"custom": true,
 	"name": "coffeecloud_group",
 	"translation": {
-		"de": "Scanomat Gruppe",
-		"en": "Scanomat group"
+		"de": "CoffeeCloud Gruppe",
+		"en": "CoffeeCloud group"
 	},
 	"vendor": "Scanomat"
 }
