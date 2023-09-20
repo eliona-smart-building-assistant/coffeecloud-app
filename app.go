@@ -196,7 +196,7 @@ func collectGroupedMachines(config apiserver.Configuration) ([]eliona.MachineGro
 				MachineName:       ccMachine.MachineName,
 				SerialNumber:      serialNumber,
 				Firmware:          ccMachine.Origin.Firmware,
-				CubCount:          ccMachine.NumberOfCups,
+				CupCount:          ccMachine.NumberOfCups,
 				HoursSinceCleaned: ccMachine.HoursSinceClean,
 			}
 			if ccMachineError, exists := ccMachineErrors[serialNumber]; exists {

@@ -25,9 +25,9 @@
 		},
 		{
 			"enable": true,
-			"name": "cub_count",
+			"name": "cup_count",
 			"subtype": "input",
-			"translation": {"de": "Tassen", "en": "cubs"},
+			"translation": {"de": "Tassen", "en": "cups"},
 			"type": "level",
 			"aggregationMode": "avg",
 			"aggregationRasters": [

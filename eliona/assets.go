@@ -40,7 +40,7 @@ type Machine struct {
 	SerialNumber string `json:"serialNumber,omitempty" eliona:"serial_number,filterable"`
 	Firmware     int    `json:"firmware,omitempty" eliona:"firmware,filterable"`
 
-	CubCount          int    `json:"cubCount,omitempty" eliona:"cub_count" subtype:"input"`
+	CupCount          int    `json:"cupCount,omitempty" eliona:"cup_count" subtype:"input"`
 	EngineStatus      string `json:"engineStatus,omitempty" eliona:"engine_status,filterable" subtype:"status"`
 	HoursSinceCleaned int    `json:"hourSinceCleaned,omitempty" eliona:"hours_since_cleaned" subtype:"status"`
 	ErrorCode         int    `json:"errorCode,omitempty" eliona:"error_code,filterable" subtype:"status"`

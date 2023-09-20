@@ -87,8 +87,8 @@ func CoffeeCloudDashboard(projectId string) (api.Dashboard, error) {
 					Data: map[string]interface{}{
 						"aggregatedDataField": nil,
 						"aggregatedDataType":  "heap",
-						"attribute":           "cub_count",
-						"description":         "Cubs",
+						"attribute":           "cup_count",
+						"description":         "Cups",
 						"key":                 "",
 						"seq":                 0,
 						"subtype":             "input",
