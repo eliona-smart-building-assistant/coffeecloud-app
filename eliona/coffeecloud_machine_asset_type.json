@@ -4,7 +4,7 @@
 			"enable": true,
 			"name": "hours_since_cleaned",
 			"subtype": "status",
-			"translation": {"de": "seit Reinigung", "en": "since clean"},
+			"translation": {"de": "seit Reinigung", "en": "since cleaned"},
 			"type": "level",
 			"unit": "h",
 			"aggregationMode": "avg",
