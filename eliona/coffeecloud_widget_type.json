@@ -2,8 +2,8 @@
 	"name": "coffecloud",
 	"custom": true,
 	"translation": {
-		"de": "Coffecloud",
-		"en": "Coffecloud"
+		"de": "CoffeeCloud",
+		"en": "CoffeeCloud"
 	},
 	"icon": "level",
 	"withAlarm": true,

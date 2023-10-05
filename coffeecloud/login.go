@@ -16,8 +16,9 @@
 package coffeecloud
 
 import (
-	"github.com/eliona-smart-building-assistant/go-utils/http"
 	"time"
+
+	"github.com/eliona-smart-building-assistant/go-utils/http"
 )
 
 type Login struct {

@@ -19,10 +19,10 @@ create schema if not exists coffeecloud;
 create table if not exists coffeecloud.configuration
 (
 	id                   bigserial primary key,
-    username             text not null,
-    password             text not null,
-    api_key              text not null,
-    url                  text not null,
+	username             text not null,
+	password             text not null,
+	api_key              text not null,
+	url                  text not null,
 	refresh_interval     integer not null default 60,
 	request_timeout      integer not null default 120,
 	asset_filter         json,
