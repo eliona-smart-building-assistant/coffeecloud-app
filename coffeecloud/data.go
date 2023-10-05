@@ -16,9 +16,10 @@
 package coffeecloud
 
 import (
-	"github.com/eliona-smart-building-assistant/go-utils/http"
 	"strconv"
 	"time"
+
+	"github.com/eliona-smart-building-assistant/go-utils/http"
 )
 
 type CoffeeGroup struct {

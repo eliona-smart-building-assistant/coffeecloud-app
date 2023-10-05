@@ -2,6 +2,7 @@ package eliona
 
 import (
 	"fmt"
+
 	api "github.com/eliona-smart-building-assistant/go-eliona-api-client/v2"
 	"github.com/eliona-smart-building-assistant/go-eliona/asset"
 )
