@@ -2,8 +2,8 @@
   "name": "coffeecloud",
   "elionaMinVersion": "v10.1.0",
   "displayName": {
-    "en": "Coffee Cloud app",
-    "de": "Coffee Cloud App"
+    "en": "Coffee Cloud",
+    "de": "Coffee Cloud"
   },
   "description": {
     "en": "The Coffee Cloud app enables coffee machine management.",
