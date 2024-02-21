@@ -16,7 +16,8 @@ This initialization can also be handled by the `reset.sql` script.
 
 The following environment variables are required:
 
-* `CONNECTION_STRING`: The connection string to the Eliona database.
+* `CONNECTION_STRING`: configures the [Eliona database](https://github.com/eliona-smart-building-assistant/go-eliona/tree/main/db). Otherwise, the app can't be initialized and started (e.g. `postgres://user:pass@localhost:5432/iot`).
+* `INIT_CONNECTION_STRING`: configures the [Eliona database](https://github.com/eliona-smart-building-assistant/go-eliona/tree/main/db) for app initialization like creating schema and tables (e.g. `postgres://user:pass@localhost:5432/iot`). Default is content of `CONNECTION_STRING`.
 * `API_ENDPOINT`: The endpoint of the Eliona API v2.
 * `API_TOKEN`: The secret token to authenticate the app with the Eliona API.
 * `API_SERVER_PORT`: (optional) The port of the API server. Defaults to 3000.
