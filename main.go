@@ -16,7 +16,6 @@
 package main
 
 import (
-	"coffeecloud/eliona"
 	"time"
 
 	"github.com/eliona-smart-building-assistant/go-eliona/app"
@@ -37,19 +36,13 @@ func main() {
 	boil.SetDB(database)
 
 	// Set the database logging level.
-	if log.Lev() >= log.DebugLevel {
+	if log.Lev() >= log.TraceLevel {
 		boil.DebugMode = true
-		boil.DebugWriter = log.GetWriter(log.DebugLevel, "database")
+		boil.DebugWriter = log.GetWriter(log.TraceLevel, "database")
 	}
 
-	// Necessary to close used init resources, because db.Pool() is used in this app.
-	defer db.ClosePool()
-
-	// Init the app before the first run.
-	app.Init(db.Pool(), app.AppName(),
-		app.ExecSqlFile("conf/init.sql"),
-		eliona.Init,
-	)
+	// Initialize the app
+	initialization()
 
 	// Starting the service to collect the data for this app.
 	common.WaitForWithOs(
