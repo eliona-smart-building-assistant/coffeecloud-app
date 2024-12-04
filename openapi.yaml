@@ -21,7 +21,7 @@ info:
   description: API to access and configure the app CoffeeCloud
 externalDocs:
   description: Find out more about the app CoffeeCloud
-  url: https://github.com/eliona-smart-building-assistant/coffeecloud-app
+  url: https://doc.eliona.io/collection/v/eliona-english/eliona-apps/apps/coffeecloud
 servers:
   - url: http://coffeecloud/v1
 
@@ -254,7 +254,7 @@ components:
           example:
             [
               [{ "parameter": "machine_name", "regex": "^brew.*$" }],
-              [{ "parameter": "group_name", "regex": "^brew.*$" }]
+              [{ "parameter": "group_name", "regex": "^brew.*$" }],
             ]
         active:
           type: boolean
